@@ -1,0 +1,410 @@
+---
+title: "Análisis Factorial en R"
+subtitle: "Aplicación de Funciones e Interpretación de Resultados"
+author: "Dr. Pablo Ezequiel Flores Kanter"
+format: html
+embed-resources: true
+toc: true
+toc-title: "Contenido"
+editor: visual
+---
+
+```{r}
+#| label: Load packages
+#| echo: false
+#| message: false
+#| warning: false
+#| error: false
+
+# La opción #| echo está seteada en "false", lo que significa que el código se ejecutara pero no se mostrará en el documento final. #| message: false, #| warning: false y #| error: false previenen que se impriman los mensajes de alerta en el documento exportado.
+ 
+
+load_pkgs <- function(pkgs){ # Creo una función para cargar e instlar (en caso de ser necesario) los paquetes en menos pasos.
+for(pk in pkgs){
+  if(!require(pk,
+                character.only = TRUE)){
+    install.packages(pk)
+    library(pk,
+          character.only = TRUE)
+}
+}
+}
+
+load_pkgs(c("tidyverse", # Aplico la función.
+            "lavaan",
+            "papaja",
+            "semPlot",
+            "psych",
+            "psychTools",
+            "ggcorrplot")) # Si van a usar otro paquete deben indicarlo aquí.
+```
+
+# Introducción
+
+Descripción del BFI, factores y composición...
+
+```{r}
+#| label: Dataset Input
+#| echo: false
+#| include: false
+#| message: false
+#| warning: false
+#| error: false
+
+ds <- psychTools::bfi # Importo la base de datos BFI
+
+dicc <- bfi.dictionary # Reviso el diccionario para identificar los ítems inversos
+
+reverse <- function(x) { # Creo una función para invertir de manera más simple los ítems inversos
+  max(x, na.rm = TRUE) + min(x, na.rm = TRUE) - x
+}
+
+ds <- ds %>% # Aplico la función en un solo ítem para probar que funcione correctamente
+  mutate(
+    A1_r = reverse(A1)
+  )
+
+ds %>% # Verificación 1
+  select(A1, 
+         A1_r) %>% 
+  cor(use = "pairwise.complete.obs")
+
+ds %>% # Verificación 2
+  select(A1_r,
+         A2:A5) %>% 
+  cor(use = "pairwise.complete.obs")
+
+ds <- ds %>% # Luego de verificar que funciona según lo esperado, aplico la función en todos los ítems inversos
+  mutate(
+    A1_r = reverse(A1),
+    C4_r = reverse(C4),
+    C5_r = reverse(C5),
+    E1_r = reverse(E1),
+    E2_r = reverse(E2),
+    N1_r = reverse(N1),
+    N2_r = reverse(N2),
+    N3_r = reverse(N3),
+    N4_r = reverse(N4),
+    N5_r = reverse(N5),
+    O2_r = reverse(O2),
+    O5_r = reverse(O5)
+  )
+```
+
+# Análisis Descriptivos
+
+## Descriptivos
+
+Primero descriptivos...
+
+```{r}
+#| label: Descriptivo
+#| echo: false
+#| tbl-cap: Descriptivos
+#| message: false
+
+tb1 <- ds %>% 
+  select(A1_r,
+         A2:A5,
+         C1:C3,
+         C4_r,
+         C5_r,
+         E1_r,
+         E2_r,
+         E3:E5,
+         N1_r:N5_r,
+         O1,
+         O2_r,
+         O3,
+         O4,
+         O5_r
+  ) %>% 
+  describe()
+
+tb1 <- as_tibble(tb1) %>% 
+  select(n, 
+         mean,
+         sd,
+         min,
+         max,
+         skew,
+         kurtosis,
+         se) 
+
+apa_table(
+  tb1,
+  note = "Análisis exploratorios iniciales",
+  digits = c(n = 0, mean = 2, sd = 2, min = 2, max = 2, skew = 2, kurtosis = 2, se = 2)
+)
+
+```
+
+## Correlación
+
+Luego correlación...
+
+```{r}
+#| label: Correlacion
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+#| fig-cap: Matriz de correlación
+#| fig-align: center
+
+mx <- ds %>% 
+  select(A1_r,
+         A2:A5,
+         C1:C3,
+         C4_r,
+         C5_r,
+         E1_r,
+         E2_r,
+         E3:E5,
+         N1_r:N5_r,
+         O1,
+         O2_r,
+         O3,
+         O4,
+         O5_r
+  ) %>% 
+  cor(use = "pairwise.complete.obs")
+
+ggcorrplot(mx)
+```
+
+# Análisis Factorial
+
+Informo acerca del método de estimación...
+
+```{r}
+#| label: factorial 1
+#| echo: false
+#| message: false
+
+model_1 <-'AG =~ A1_r + A2 + A3 + A4 + A5
+CO =~ C1 + C2 + C3 + C4_r + C5_r
+EX =~ E1_r + E2_r + E3 + E4 + E5
+NE =~ N1_r + N2_r + N3_r + N4_r + N5_r
+OP =~ O1 + O2_r + O3 + O4 + O5_r
+'
+
+fit1 <- cfa(model_1, 
+            ds,
+            ordered = TRUE)
+
+#summary(fit1,
+#        fit.measures = TRUE,
+#        standardized = TRUE)
+```
+
+Luego de describir el resultado en el ajuste del primer modelo CFA, pruebo algo menos restrictivo...
+
+```{r}
+#| label: factorial 2
+#| echo: false
+#| message: false
+
+
+modelefa <- ds %>% 
+  select(A1_r,
+         A2:A5,
+         C1:C3,
+         C4_r,
+         C5_r,
+         E1_r,
+         E2_r,
+         E3:E5,
+         N1_r:N5_r,
+         O1,
+         O2_r,
+         O3,
+         O4,
+         O5_r
+  ) %>% 
+  efa(.,
+      nfactors = 5L,
+      ordered = TRUE)
+
+#summary(modelefa)
+
+fit2 <- ds %>% 
+  select(A1_r,
+         A2:A5,
+         C1:C3,
+         C4_r,
+         C5_r,
+         E1_r,
+         E2_r,
+         E3:E5,
+         N1_r:N5_r,
+         O1,
+         O2_r,
+         O3,
+         O4,
+         O5_r
+  ) %>% 
+  efa(.,
+      nfactors = 5L,
+      ordered = TRUE,
+      output = "lavaan") # output = "lavaan" para obtener mayor información y poder visualizarlo con semPath
+
+
+
+# Forma equivalente:
+#model_2 <-'
+#efa("efa1")*AG +
+#efa("efa1")*CO +
+#efa("efa1")*EX +
+#efa("efa1")*NE +
+#efa("efa1")*OP =~ A1_r + A2 + A3 + A4 + A5 + C1 + C2 + C3 + C4_r+ C5_r + E1_r + E2_r + E3 + E4 + E5 + N1_r + N2_r + N3_r + N4_r + N5_r + O1 + O2_r + O3 + O4 + O5_r
+#'
+
+
+#fit_ <- sem(model_2, 
+#            ds,
+#           ordered = TRUE,
+#            rotation = "geomin")
+
+#summary(fit_,
+#        fit.measures = TRUE,
+#        standardized = TRUE)
+```
+
+A continuación tabla con los índices de ajuste, luego las representaciones gráficas de ambos modelos y cargas factoriales estandarizadas:
+
+```{r}
+#| label: tbl1
+#| echo: false
+#| tbl-cap: Ajuste de los Modelos de Medición
+
+# Primero armo la tabla vacía:
+MM.results<-matrix(NA, nrow = 2, ncol = 6)
+
+MM_names <- c("X2",
+              "df",
+              "p",
+              "RMSEA", 
+              "CFI", 
+              "SRMR")
+
+colnames(MM.results) <- MM_names
+
+row.names(MM.results)<- c("Modelo CFA", "Modelo ESEM")
+
+# Lleno la tabla con los valores resultantes de los pasos previos:
+
+MM.results[1,]<-data.matrix(fitmeasures(fit1,
+fit.measures = c("chisq.scaled",
+                 "df.scaled",
+                 "pvalue.scaled", 
+                 "rmsea.scaled", 
+                 "cfi.scaled", 
+                 "srmr_bentler")))
+
+MM.results[2,]<-data.matrix(fitmeasures(fit2,
+fit.measures = c("chisq.scaled",
+                 "df.scaled",
+                 "pvalue.scaled", 
+                 "rmsea.scaled", 
+                 "cfi.scaled", 
+                 "srmr_bentler")))
+
+
+apa_table(
+  MM.results,
+  note = "Índices de Ajuste",
+  digits = c(0, 3, 0, 3, 3, 3, 3)
+)
+
+```
+
+Modelo especificado en CFA:
+
+```{r}
+#| label: diagrama 1 
+#| echo: false 
+#| message: false 
+#| fig-width: 15 
+#| fig-height: 10 
+#| fig-align: center 
+#| fig-cap: Modelo CFA  
+
+semPlot::semPaths(fit1, 
+                  what = "est",
+                  whatLabels = "stand", 
+                  weighted = FALSE,
+         intercepts = FALSE,
+         residuals = FALSE,
+         thresholds = FALSE,
+         edge.label.cex = 1.0)
+```
+
+Cargas factoriales estandarizadas CFA:
+
+```{r}
+#| label: tbl2
+#| echo: false
+#| tbl-cap: Cargas Factoriales
+
+std_fit1 <- standardizedSolution(fit1)
+std_fit1_ <- std_fit1[std_fit1$op == "=~",]
+
+apa_table(
+  std_fit1_,
+  note = "Cargas Estandarizadas Modelo CFA"
+)
+```
+
+Modelos especificado en ESEM:
+
+```{r}
+#| label: diagrama 2 
+#| echo: false 
+#| message: false 
+#| fig-width: 15 
+#| fig-height: 10 
+#| fig-align: center 
+#| fig-cap: Modelo EFA (ESEM)  
+
+semPaths(fit2,
+         intercepts = FALSE,
+         residuals = FALSE)
+```
+
+Cargas factoriales estandarizadas ESEM:
+
+```{r}
+#| label: tbl3
+#| echo: false
+#| tbl-cap: Cargas Factoriales
+
+#std_fit2 <- standardizedSolution(fit2)
+#std_fit2_ <- std_fit2[std_fit2$op == "=~",]
+
+apa_table(
+  modelefa[["loadings"]],
+  note = "Cargas Estandarizadas Modelo ESEM"
+)
+```
+
+Prueba estadística de diferencia en el índice X2:
+
+```{r}
+#| label: anova
+#| echo: false
+#| tbl-cap: Diferencia en el ajuste
+
+test <- lavTestLRT(fit1, fit2)
+
+test <- lavTestLRT(fit1, fit2) %>%
+  rownames_to_column("Modelos") %>% 
+  mutate(Modelos = recode(Modelos,
+                        "fit1" = "CFA",
+                        "fit2" = "ESEM"))
+
+apa_table(
+  test,
+  note = "Prueba estandar de Santorra (2000)",
+  digits = c(0, 0, 0, 0, 3, 3, 3, 3)
+)
+```
