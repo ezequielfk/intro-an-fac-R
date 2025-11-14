@@ -1,7 +1,4 @@
 
-# Hola R
+usethis::use_git()
 
-usethis::git_sitrep()
-
-usethis::edit_r_environ(scope = "project"
-)
+usethis::use_github()
