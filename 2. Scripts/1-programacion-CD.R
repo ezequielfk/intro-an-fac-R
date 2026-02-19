@@ -200,7 +200,7 @@ length(vector2)
 
 # Para acceder a los elementos individuales de un vector se usan los corchetes "[ ]":
 
-vector
+vector # recordar los elementos del vector
 
 vector[2] # el elemento del vector que está en el segundo lugar.
 vector[1:2] # los primeros dos elementos.
@@ -213,9 +213,15 @@ vector[c(3,
 
 ### Operaciones con Vectores ----  
 
+vector # recordar los elementos del vector
+
 vector * 2 # al ser R un lenguaje vectorizado, la operación se realiza para cada elemento del vector de manera automática sin necesidad de crear un loop o ciclo.
 
 # Si tengo dos vectores de igual tamaño (o de distinto tamaño pero siendo el vector de mayor tamaño múltiplo del de menor tamaño): 
+
+vector # recordar los elementos del vector
+
+vector2 # recordar los elementos del vector
 
 vector + vector2
 
