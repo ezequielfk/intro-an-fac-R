@@ -1,6 +1,6 @@
    ################################################
   #   PROGRAMA DE ESPECIALIZACIÓN EN PSICOMETRÍA #
- # DR. PABLO EZEQUIEL FLORES KANTER             #
+ #      DR. PABLO EZEQUIEL FLORES KANTER        #
 ################################################
 
 # Primero, personalizar el entorno de R-Studio ----
@@ -85,15 +85,15 @@ x <- 5
 x
 class(x) # Función para chequear el tipo de dato que contiene el objeto.
 
-### Datos de tipo character o cualitativos: ----
+### Datos de tipo character: ----
 
 x <- "Aguante RStudio"
 x
 class(x)
 
-### Datos de tipo factor o categóricos: ----
+### Datos de tipo factor (variables nominales y categóricas): ----
 
-# Los niveles de un factor son los valores únicos contenidos en el vector.
+# Primero cramos un vector
 
 dias_v <- c("lunes", 
             "martes",
@@ -104,24 +104,40 @@ dias_v <- c("lunes",
             "lunes", 
             "viernes") #! esto es un vector
 
-dias_v
+dias_v # visualizo el objeto/variable
 
-class(dias_v)
+class(dias_v) # consulto la clase de objeto
 
-dias_f <- factor(dias_v, 
-                 ordered = TRUE, 
+summary(dias_v) # solicito un resumen de la información que contiente este objeto
+
+
+# Al transformar el vector en un factor se agrupan en niveles los valores dentro del vector.  
+# Los niveles de un factor son los valores únicos contenidos en el vector.
+
+# Ejemplo de factor no ordenado (variable nominal):
+
+dias_f1 <- factor(dias_v) 
+
+class(dias_f1)
+
+summary(dias_f1)
+
+# Ejemplo de factor ordenado (variable ordinal):
+
+dias_f2 <- factor(dias_v, 
+                 ordered = TRUE, # especifico que los valores tienen un orden.
                  levels = c("lunes", 
                             "martes", 
                             "miércoles", 
                             "jueves", 
-                            "viernes"))
-dias_f
+                            "viernes")) # especifico el orden de los valores.
+dias_f2
 
-class(dias_f)
+class(dias_f2)
 
-summary(dias_f)
+summary(dias_f2)
 
-# Otro ejemplo, datos nominales:
+# Otro ejemplo de variable nominal:
 
 genero_v <- c("masculino", 
               "femenino", 
@@ -134,6 +150,8 @@ genero_v <- c("masculino",
               "masculino", 
               "femenino")
 genero_v
+
+summary(genero_v)
 
 genero_f <- factor(genero_v)
 
