@@ -1,6 +1,7 @@
-   # ____________________________________________ #   
-  #   PROGRAMA DE ESPECIALIZACIÓN EN PSICOMETRÍA #
- #      DR. PABLO EZEQUIEL FLORES KANTER        #
+    # ____________________________________________ #   
+   #   PROGRAMA DE ESPECIALIZACIÓN EN PSICOMETRÍA #
+  #      DR. PABLO EZEQUIEL FLORES KANTER        #
+ #              Primera Parte                   #
 # ____________________________________________ #
 
 
@@ -351,6 +352,36 @@ datos
 
 View(datos)
 
+# Ejemplo de creación de DF con funciones de probabilidad:
+
+# creamos 4 vectores (variables)
+
+id <- 1:1000  # Variable de identificación: casos 1 al 1000        
+
+edad <- sample(18:65,1000) # Variable edad. Utilizo la función "sample" para crear 1000 valores aleatorios entre los valores 18 y 65
+
+edad <- sample(18:65, 1000, replace = TRUE) # Tengo que hacer un muestreo con reposición 
+
+hist(edad) # Visualizar la distribución de la variable edad (distribución uniforme)
+
+edad_2 <- runif(1000, min = 18, max = 65) # Manera alternativa de generar la variable edad a través de la función para generar distribuciones uniformes: "runif"
+
+hist(edad_2)
+
+edad_3 <- rnorm(1000, mean = 40, sd = 10) 
+
+hist(edad_3)
+
+genero <- factor(sample(c("Masculino","Femenino","No Binario"), 1000, replace = TRUE)) # Variable género
+
+plot(genero)
+
+genero_2 <- factor(sample(c("Masculino","Femenino","No Binario"), 1000, replace = TRUE,
+                          prob = c(.45,.45,.10)))
+
+plot(genero_2)
+
+
 ### Operaciones con el DF ----
 
 datos <- data.frame(ID = v_id, 
@@ -362,11 +393,13 @@ class(datos) # verifico la clase de objeto
 
 str(datos) # miro estructura del conjunto de datos
 
-summary(datos)
+summary(datos) # resumo la información de las respectivas variables
 
 datos$Genero # selecciono la variable sexo del DF
 
-summary(datos$Genero)
+summary(datos$Genero) # resumo solo la información de la variable género
+
+plot(datos$Genero) # la función plot() me permite generar un gráfico de resumen
 
 datos[,3] # otras maneras de acceder a los elementos del DF: 
 # consulta por los elementos de la columna (vector) 3
