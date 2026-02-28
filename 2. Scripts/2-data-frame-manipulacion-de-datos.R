@@ -1,95 +1,27 @@
-################################################
+#----------------------------------------------#
 #   PROGRAMA DE ESPECIALIZACIÓN EN PSICOMETRÍA #
 #     DR. PABLO EZEQUIEL FLORES KANTER         #
-################################################
-
-# TIPOS DE OBJETOS ----
-
-
-## Vectores ----
-
-# Colección de elementos, todos del mismo tipo (ejemplo, elementos numéricos o de tipo character), y que mantienen un orden determinado.
-# Esto lo trabajamos en el script "1_script_..." en las primeras clases.
+#              Segunda Parte                   #
+#----------------------------------------------#
 
 
-## Lista ----
-
-# Contenedor o repositorio, que puede contener una serie de objetos arbitrarios de distinto tipo. 
-# Lo veremos cuando tengamos que trabajar con algunas salidas de los paquetes especializados en el análisis factorial.
-
-
-## Data Frame (DF) ----
-
-# Similar a una hoja de cálculo de excel en donde tenemos filas y columnas. 
-# En un data.frame, cada columna es un vector (variable) y estos vectores tienen la misma longitud (cantidad de casos). 
-# Cada columna (vector) puede contener distintos tipos de datos; pero dentro de cada columna todos los elementos deben ser del mismo tipo. 
-
-### Creacion de un DF ----
 
 # creamos 4 vectores (variables)
 
 id <- 1:1000  # Variable de identificación: casos 1 al 1000        
 
-edad <- sample(18:65,1000) # Variable edad. Utilizo la función "sample" para crear 1000 valores aleatorios entre los valores 18 y 65
+edad <- rnorm(1000, mean = 40, sd = 10) 
 
-edad <- sample(18:65, 1000, replace = TRUE) # Tengo que hacer un muestreo con reposición 
 
-hist(edad) # Visualizar la distribución de la variable edad (distribución uniforme)
-
-edad_2 <- runif(1000, min = 18, max = 65) # Manera alternativa de generar la variable edad a través de la función para generar distribuciones uniformes: "runif"
-
-hist(edad_2)
-
-edad_3 <- rnorm(1000, mean = 40, sd = 10) 
-
-hist(edad_3)
-
-genero <- factor(sample(c("Masculino","Femenino","No Binario"), 1000, replace = TRUE)) # Variable género
-
-plot(genero)
-
-genero_2 <- factor(sample(c("Masculino","Femenino","No Binario"), 1000, replace = TRUE,
+genero <- factor(sample(c("Masculino","Femenino","No Binario"), 1000, replace = TRUE,
                           prob = c(.45,.45,.10)))
 
-plot(genero_2)
 
-# Integración de los vectores en un data frame: Se incluyen las variables en una base de datos
 
-datos <- data.frame(id,edad_3,genero_2)# Indico las variables a incorporar en la base 
+datos <- data.frame(id,
+                    edad,
+                    genero) # indico las variables a incorporar en la base 
                      
-datos
-
-View(datos)
-
-datos <- data.frame(ID = id, Edad = edad, Genero = genero_2)# Si lo deseo, dentro de la función data.frame puedo especificar nuevos nombres
-
-View(datos)
-
-### Operaciones con el DF ----
-
-class(datos) # verifico la clase de objeto
-
-str(datos) # miro estructura del conjunto de datos
-
-summary(datos)
-
-datos$Genero # selecciono la variable sexo del DF
-
-summary(datos$Genero)
-
-plot(datos$Genero)
-
-datos[,3] # otras maneras de acceder a los elementos del DF: consulta por los elementos de la columna (vector) 3
-
-datos[,"Genero"]
-
-datos[1,2] # Consulta por el elemento de la fila 1 columna 2
-
-head(datos) # visualizar las primeras 6 observaciones del conjunto de datos
-
-tail(datos) # visualizar las últimas 6 observaciones del conjunto de datos
-
-
 # IMPORTAR DATOS ----
 
 ## Exportar primero: ----
