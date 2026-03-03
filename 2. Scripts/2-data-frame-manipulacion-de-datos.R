@@ -4,9 +4,11 @@
 #              Segunda Parte                   #
 #----------------------------------------------#
 
+# IMPORTAR DATOS ----
 
+## Exportar primero: ----
 
-# creamos 4 vectores (variables)
+# Primero creamos una base de datos ficticia:
 
 id <- 1:1000  # Variable de identificación: casos 1 al 1000        
 
@@ -22,11 +24,10 @@ datos <- data.frame(id,
                     edad,
                     genero) # indico las variables a incorporar en la base 
                      
-# IMPORTAR DATOS ----
 
-## Exportar primero: ----
 
-# Para esto primero exportemos nuestro data frame en distintos formatos para luego volver a importarlo
+  # Para esto primero exportemos nuestro data frame en distintos formatos para luego 
+# volver a importarlo
 
 write.csv(datos, "datos.csv", row.names = FALSE)# Exporto un archivo .csv (delimitado por comas)
 
@@ -46,65 +47,90 @@ haven::write_sav(datos, "datos.sav")
 
 ### Archivos .csv: ----
 ds_csv <- read.csv("datos.csv", sep = ",", dec=",", header = TRUE)
+
 str(ds_csv)# Chequear
+
 summary(ds_csv)
 
 ds_csv <- read.csv("datos.csv", sep = ",", dec=".", header = TRUE)
+
 str(ds_csv)# Chequear
+
 summary(ds_csv)
 
-ds_csv$genero_2 <- as.factor(ds_csv$genero_2)# Transformar como variable categórica.  
 str(ds_csv)# Chequear
-summary(ds_csv)
 
+summary(ds_csv)
 
 ### Archivos .xlsx: ----
+
 ds_xlsx <- xlsx::read.xlsx("datos.xlsx", sheetIndex = 1)
-# otro modo si tenemos activada el paquete "xlsx" es directamente aplicando la función:read.xlsx("datos.xlsx", sheetIndex = 1)
-# recordar que cuando aparece el nombre de la función con 2 dos puntos consecutivos, como en xlsx:: lo que hacemos es llamar a una función específica del paquete sin necesidad de activar todas las funciones del paquete.
+  # Otro modo si tenemos activada el paquete "xlsx" es directamente aplicando la función:
+# read.xlsx("datos.xlsx", sheetIndex = 1)
+  # Recordar que cuando aparece el nombre de la función con 2 dos puntos consecutivos, 
+# como en xlsx:: lo que hacemos es llamar a una función específica del paquete sin necesidad de activar todas las funciones del paquete.
+
 str(ds_xlsx)# Chequear
+
 summary(ds_xlsx)
 
-
 ### Archivos .sav: ----
+
 ds_sav <- haven::read_sav("datos.sav")
+
 str(ds_sav)# Chequear
+
 summary(ds_sav)
 
 ds_sav$Genero <- factor(ds_sav$Genero, labels = c("femenino", "masculino", "no binario"))
+
 str(ds_sav)# Chequear
+
 summary(ds_sav)
 
-# Podemos lograr todo esto cliqueando también, siempre y cuando se tenga los paquetes instalados (similar a como trabaja JASP o JAMOVI)
-
+  # Podemos lograr todo esto cliqueando también, siempre y cuando se tenga los paquetes 
+# instalados (similar a como trabaja JASP o JAMOVI)
 
 ## Trabajar con data sets incorporadas en R u otros paquetes ----
+
 # install.packages("psych")
+
 # install.packages("psychTools")
 
+data(package = "psychTools") # Para visualizar las bases de datos que están disponibles.
 
-ds_bfi <- psychTools::bfi
-str(ds_bfi)
+?bfi # Consultar mayor información sobre esta base de datos.
 
-dicc_bfi <- psychTools::bfi.dictionary
-View(dicc_bfi)
+ds_bfi <- psychTools::bfi # Creo el objeto data frame 
 
+str(ds_bfi) # Reviso la estructura de la base de datos.
 
-key_bfi <- psychTools::bfi.keys
-key_bfi
+dicc_bfi <- psychTools::bfi.dictionary # Creo una data frame para visualizar el diccionario. 
+
+View(dicc_bfi) # Visualizo el diccionario o lo abro desde el entorno de trabajo
+
+key_bfi <- psychTools::bfi.keys # Creo una lista con 5 vectores que me muestran qué ítems
+# corresponden con cual factor (así como la dirección de estos indicadores -ítems inversos-).
+
+key_bfi # Visualizo.
+
+# Otro ejemplo de base de datos:
 
 ds_epi <- psychTools::epi
+
 str(ds_epi)
 
 dicc_epi <- psychTools::epi.dictionary
+
 View(dicc_epi)
 
 keys_epi <- psychTools::epi.keys
+
 keys_epi$E
 
 mtx_cattell <- psychTools::cattell
-View(mtx_cattell)
 
+View(mtx_cattell)
 
 # OPERACIONES CON EL DATA FRAME (DF) ----
 
@@ -113,7 +139,8 @@ View(mtx_cattell)
 # str() para ver las variables y la clase de variable incluída
 # summary() para obtener un análisis de resumen inicial
 
-# También hicimos algunas conversion de tipo de datos en el DF, cuando arriba transformamos la variable a un factor.
+  # También hicimos algunas conversion de tipo de datos en el DF, cuando arriba transformamos
+# la variable a un factor.
 # Otros tipos de transformaciones:
 
 # as.numeric - Convierte a tipo numerico
@@ -123,18 +150,20 @@ View(mtx_cattell)
 # as.factor - Convierte a tipo factor
 # as.ordered - Convierte a tipo factor ordenado
 
-
 ## Mediante el paquete Tydiverse ----
 
 # Tidyverse es una colección de paquetes de R diseñados para el análisis de datos.
 
 # install.packages("tidyverse")
+
 library(tidyverse)
+
 tidyverse_packages() # conocer los paquetes incluídos
 
-## Piping %>% ----
+## Piping |> ----
 
-# Se utiliza %>% para encadenar una secuencia de acciones donde el output del paso anterior es el input del actual.
+  # Se utiliza |> para encadenar una secuencia de acciones donde el output del paso anterior 
+# es el input del actual.
 # Hace más eficiente/simple (más corto y directo) el código
 
 ## Dplyr ----
@@ -152,27 +181,27 @@ tidyverse_packages() # conocer los paquetes incluídos
 
 ### Ejemplo 1: Mutate, Select, rename ----
 
-ds_bfi <- ds_bfi %>% 
-  mutate(gender = factor(gender, levels = c(1,2), labels = c("masculino", "femenino"))) %>% 
+ds_bfi <- ds_bfi |>  
+  mutate(gender = factor(gender, levels = c(1,2), labels = c("masculino", "femenino"))) |> 
   rename(Genero = gender)
 
 
-ds_bfi %>% 
-  select(Genero) %>% 
+ds_bfi |> 
+  select(Genero) |>  
   str()
 
 
 
 ### Ejemplo 2: Group_by, Select, Summarise ----
 
-ds_bfi %>% 
-  group_by(Genero) %>% 
-  select(A1:A5) %>% 
+ds_bfi |>  
+  group_by(Genero) |>  
+  select(A1:A5) |> 
   summarise(m_A1 = mean(A1), sd_A1 = sd(A1)) # Indica que hay datos ausentes
 
-ds_bfi %>% 
-  group_by(Genero) %>% 
-  select(A1:A5) %>% 
+ds_bfi |> 
+  group_by(Genero) |> 
+  select(A1:A5) |> 
   summarise(n = sum(n()),
             m_A1 = mean(A1, na.rm = TRUE), # na.rm = TRUE calcula la media eliminando el caso ausente (listwise deletion/complete-case)
             sd_A1 = sd(A1, na.rm = TRUE),
@@ -183,41 +212,43 @@ ds_bfi %>%
 
 ### Ejemplo 3: filter ----
  
-ds_bfi %>% 
-  filter(Genero == "masculino") %>% 
-  select(A1) %>% 
+ds_bfi |> 
+  filter(Genero == "masculino") |> 
+  select(A1) |> 
   summary()
 
-ds_bfi %>% 
-  filter(Genero == "femenino") %>% 
-  select(A1) %>% 
+ds_bfi |> 
+  filter(Genero == "femenino") |> 
+  select(A1) |> 
   summary()
 
 
 ### Ejemplo 4: select, correlación y descriptivos ----
 
-ds_bfi %>% 
-  select(A1:A5) %>% 
+ds_bfi |> 
+  select(A1:A5) |> 
   cor() # Indica que hay datos ausentes
 
-ds_bfi %>% 
-  select(A1:A5) %>% 
+ds_bfi |> 
+  select(A1:A5) |> 
   cor(use = "pairwise.complete.obs") # Trabajo solo con los pares de valores que tienen datos. Otra opción es ""
 
-ds_bfi %>% 
-  select(A1:A5) %>% 
+ds_bfi |> 
+  select(A1:A5) |> 
   psych::describeBy(group = ds_bfi$Genero)
 
-table_1 <- ds_bfi %>% 
-  select(A1:A5) %>% 
-  psych::describeBy(group = ds_bfi$Genero) # Esto genera una lista: Contenedor o repositorio, que puede contener una serie de objetos arbitrarios de distinto tipo. 
-# Se utiliza doble corchete [[]] para acceder a elementos de una lista (uno x vez), especificando el número de elemento o el nombre:
+table_1 <- ds_bfi |> 
+  select(A1:A5) |> 
+  psych::describeBy(group = ds_bfi$Genero) # Esto genera una lista con dos data frames, 
+# donde se muestran los análisis descriptivos en función del género.
+
+table_1
+
+  # Se utiliza doble corchete [[]] para acceder a elementos de una lista (uno x vez), 
+# especificando el número de elemento o el nombre:
 
 table_mas <- table_1[["masculino"]]
 table_fem <- table_1[[2]]
-
-
-
 
 
 # ¡Ahora nos mudamos a QUARTO! ----
