@@ -9,6 +9,36 @@ toc-title: "Contenido"
 editor: visual
 ---
 
+```{r}
+#| label: Load packages
+#| echo: false
+#| message: false
+#| warning: false
+#| error: false
+
+# La opción #| echo está seteada en "false", lo que significa que el código se ejecutara pero no se mostrará en el documento final. #| message: false, #| warning: false y #| error: false previenen que se impriman los mensajes de alerta en el documento exportado.
+ 
+
+load_pkgs <- function(pkgs){ # Creo una función para cargar e instlar (en caso de ser necesario) los paquetes en menos pasos.
+for(pk in pkgs){
+  if(!require(pk,
+                character.only = TRUE)){
+    install.packages(pk)
+    library(pk,
+          character.only = TRUE)
+}
+}
+}
+
+load_pkgs(c("tidyverse", # Aplico la función.
+            "lavaan",
+            "papaja",
+            "semPlot",
+            "psych",
+            "psychTools",
+            "ggcorrplot")) # Si van a usar otro paquete deben indicarlo aquí.
+```
+
 # Introducción
 
 Descripción del BFI, factores y composición...
@@ -21,8 +51,6 @@ Descripción del BFI, factores y composición...
 #| warning: false
 #| error: false
 
-# La opción #| echo está seteada en "false", lo que significa que el código se ejecutara pero no se mostrará en el documento final. #| message: false, #| warning: false y #| error: false previenen que se impriman los mensajes de alerta en el documento exportado.
-
 ds <- psychTools::bfi # Importo la base de datos BFI
 
 dicc <- bfi.dictionary # Reviso el diccionario para identificar los ítems inversos
@@ -32,22 +60,22 @@ reverse <- function(x) { # Creo una función para invertir de manera más simple
 }
 
 ds <- ds %>% # Aplico la función en un solo ítem para probar que funcione correctamente
-  dplyr::mutate(
+  mutate(
     A1_r = reverse(A1)
   )
 
 ds %>% # Verificación 1
-  dplyr::select(A1, 
+  select(A1, 
          A1_r) %>% 
   cor(use = "pairwise.complete.obs")
 
 ds %>% # Verificación 2
-  dplyr::select(A1_r,
+  select(A1_r,
          A2:A5) %>% 
   cor(use = "pairwise.complete.obs")
 
 ds <- ds %>% # Luego de verificar que funciona según lo esperado, aplico la función en todos los ítems inversos
-  dplyr::mutate(
+  mutate(
     A1_r = reverse(A1),
     C4_r = reverse(C4),
     C5_r = reverse(C5),
