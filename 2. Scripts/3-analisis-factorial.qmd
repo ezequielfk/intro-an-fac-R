@@ -11,12 +11,13 @@ editor: visual
 
 ```{r}
 #| label: Load packages
-#| echo: false
+#| include: false
 #| message: false
 #| warning: false
-#| error: false
 
-# La opción #| echo está seteada en "false", lo que significa que el código se ejecutara pero no se mostrará en el documento final. #| message: false, #| warning: false y #| error: false previenen que se impriman los mensajes de alerta en el documento exportado.
+
+# La opción "#| include: false" ejecuta el código, pero no muestra el código ni da como resultado el documento final.
+# "#| message: false", y "#| warning: false" previenen que se impriman los mensajes de alerta en el documento exportado.
  
 
 load_pkgs <- function(pkgs){ # Creo una función para cargar e instlar (en caso de ser necesario) los paquetes en menos pasos.
@@ -29,14 +30,16 @@ for(pk in pkgs){
 }
 }
 }
+# Aplico la función.
+# Si van a usar otro paquete deben indicarlo aquí.
 
-load_pkgs(c("tidyverse", # Aplico la función.
-            "lavaan",
-            "papaja",
-            "semPlot",
-            "psych",
-            "psychTools",
-            "ggcorrplot")) # Si van a usar otro paquete deben indicarlo aquí.
+load_pkgs(c("tidyverse", # Paquete para manipulación de datos
+            "lavaan", # Paquete para análisis SEM
+            "papaja", # Facilita la impresión del reporte y resultados en formato APA
+            "semPlot", # Diagramar las salidas de lavaan
+            "psych", # Bases de datos y Diversos métodos para el análisis
+            "psychTools", # Acceso a bases de datos
+            "ggcorrplot")) # Visualización de correlaciones
 ```
 
 # Introducción
@@ -45,11 +48,9 @@ Descripción del BFI, factores y composición...
 
 ```{r}
 #| label: Dataset Input
-#| echo: false
 #| include: false
 #| message: false
 #| warning: false
-#| error: false
 
 ds <- psychTools::bfi # Importo la base de datos BFI
 
@@ -102,6 +103,8 @@ Primero descriptivos...
 #| echo: false
 #| tbl-cap: Descriptivos
 #| message: false
+
+# La opción #| echo está seteada en "false", lo que significa que el código se ejecutara pero no se mostrará en el documento final (sí se imprimirá el resultado).
 
 tb1 <- ds %>% 
   select(A1_r,
